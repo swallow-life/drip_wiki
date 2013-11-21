@@ -1,0 +1,11 @@
+<html>
+	<head>
+		<title>wiki</title>
+		<meta name="viewport" content="width=320" />
+	</head>
+	<body>
+	<% @wiki_names.each do |name| %>
+			<a href='/wiki/<%= name %>'><%= name %></a><br />
+	<% end %>
+	</body>
+</html>

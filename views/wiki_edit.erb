@@ -1,0 +1,13 @@
+<html>
+	<head>
+		<title>wiki</title>
+		<meta name="viewport" content="width=320" />
+	</head>
+	<body>
+		<form method='post' action="/wiki/<%= @name %>">
+			<textarea name="contents" rows="8" cols="80"><%= @value %></textarea><br />
+			<input type='submit' value='<%= @button_name %>' />
+			<a href="/wiki/<%= @name %>">戻る</a>
+		</form>
+	</body>
+</html>

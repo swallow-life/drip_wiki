@@ -1,0 +1,13 @@
+<html>
+	<head>
+		<title>wiki</title>
+		<meta name="viewport" content="width=320" />
+	</head>
+	<body>
+		<% @list.each do |elem| 
+			key,_,name = elem
+			edit_time = Time.at(key / 1000000) %>
+			<a href='/wiki/<%= name %>'><%= name %></a> [<%= edit_time.strftime("%Y/%m/%d %X") %>]<br />
+		<% end %>
+	</body>
+</html>
