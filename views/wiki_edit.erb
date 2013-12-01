@@ -4,10 +4,15 @@
 		<meta name="viewport" content="width=320" />
 	</head>
 	<body>
+		<div><%= @contents %></div>
 		<form method='post' action="/wiki/<%= @name %>">
 			<textarea name="contents" rows="8" cols="80"><%= @value %></textarea><br />
 			<input type='submit' value='<%= @button_name %>' />
+			<% if @edit %>
 			<a href="/wiki/<%= @name %>">戻る</a>
+			<% else	%>
+			<a href="/wiki/<%= @previous_page %>">戻る</a>
+			<% end %>
 		</form>
 	</body>
 </html>

@@ -4,8 +4,13 @@
 		<meta name="viewport" content="width=320" />
 	</head>
 	<body>
-	<% @wiki_names.each do |name| %>
+		<div>
+		<% @wiki_names.each do |name| %>
 			<a href='/wiki/<%= name %>'><%= name %></a><br />
-	<% end %>
+		<% end %>
+		</div>
+		<div>
+			<a href='/wiki/history'>履歴</a><br />
+		</div>
 	</body>
 </html>
