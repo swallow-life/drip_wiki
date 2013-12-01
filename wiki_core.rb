@@ -15,6 +15,8 @@ end
 
 WIKI_NAMES_TAG = "__wiki_nemes__"
 WIKI_NAME_PRE_SUF_FIX = "\\+{2}"
+WIKI_LINK_PRE_FIX = "\\[{2}"
+WIKI_LINK_SUF_FIX = "\\]{2}"
 
 helpers do
 	include Rack::Utils
@@ -26,14 +28,20 @@ helpers do
 	end
 	alias_method :us, :unescape_slash
 
-	def make_link(str, wiki_names)
-		str.gsub(/#{WIKI_NAME_PRE_SUF_FIX}(.+?)#{WIKI_NAME_PRE_SUF_FIX}/) {"[#{$1}](/wiki/#{$1})"}
+	def make_link(contents, parent_page)
+		#page配下へのリンクを作る。
+		contents.gsub!(/#{WIKI_NAME_PRE_SUF_FIX}(.+?)#{WIKI_NAME_PRE_SUF_FIX}/) do
+			"[#{$1}](/wiki/#{parent_page}/#{$1})"
+		end
+		#リンクを作る。
+		contents.gsub!(/#{WIKI_LINK_PRE_FIX}(.+?)#{WIKI_LINK_SUF_FIX}/) do
+			"[#{$1}](/wiki/#{$1})"
+		end
+		contents
 	end
 end
 
-
-
-get '/wiki' do
+get '/wiki/?' do
 	#
 	"wiki top"
 end
@@ -47,30 +55,33 @@ get '/wiki/list' do
 		_, _, tag = drip.head(1, wiki_name.to_s)[0]
 		@wiki_names << tag unless tag == WIKI_NAMES_TAG
 	end
+	@wiki_names.sort!
 	erb :wiki_list
 end
 
 get '/wiki/history' do
 	#wikiページの更新履歴を表示する
-	@list = settings.drip.head(10)
+	@list = settings.drip.head(100)
+=begin
 	@list.reject! do |elem|
 		elem[2] == WIKI_NAMES_TAG
 	end
+=end
 	@list.reverse! do |first, second|
 		first[0] <=> second[0]
 	end
 	erb :wiki_history
 end
 
-get '/wiki/:name' do |name|
+get '/wiki/*' do |name|
 	@name = name
 	edit = params[:edit]
 	#該当のwikiページを表示する
 	drip = settings.drip
 	_, @value = drip.head(1, name)[0]
-	_, wiki_names, = drip.head(1, WIKI_NAMES_TAG)[0]
+#	_, wiki_names, = drip.head(1, WIKI_NAMES_TAG)[0]
 	html_escaped = us h @value
-	@contents = markdown(make_link(html_escaped, wiki_names))
+	@contents = markdown(make_link(html_escaped, request.path.sub("/wiki/", "")))
 	if @value and not edit
 		erb :wiki_page
 	else
@@ -83,7 +94,7 @@ get '/wiki/:name' do |name|
 end
 
 
-post '/wiki/:name' do |name|
+post '/wiki/*' do |name|
 	drip = settings.drip
 	#wikiページの作成処理
 	contents = params[:contents]
@@ -93,8 +104,11 @@ post '/wiki/:name' do |name|
 	else
 		_, wiki_names = drip.head(1, WIKI_NAMES_TAG)[0]
 	end
-	wiki_names.store(name, true)
-	drip.write(wiki_names, WIKI_NAMES_TAG)
+
+	unless wiki_names.key? name
+		wiki_names.store(name, true)
+		drip.write(wiki_names, WIKI_NAMES_TAG)
+	end
 
 	redirect "wiki/#{name}"
 end
