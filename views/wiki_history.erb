@@ -7,7 +7,7 @@
 		<% @list.each do |elem| 
 			key,_,name = elem
 			edit_time = Time.at(key / 1000000) %>
-			<a href='/wiki/<%= name %>'><%= name %></a> [<%= edit_time.strftime("%Y/%m/%d %X") %>]<br />
+			<a href='/wiki/history/<%= key %>'><%= name %></a> [<%= edit_time.strftime("%Y/%m/%d %X") %>]<br />
 		<% end %>
 	</body>
 </html>

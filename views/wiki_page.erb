@@ -5,7 +5,10 @@
 	</head>
   	<body>
 		<div><%= @contents %></div>
+		<% unless @freeze %>
 		<a href="/wiki/<%= @name %>?edit=true">編集</a>
-		<a href="/wiki/list">一覧</a>
+		<% end %>
+		<a href="/wiki">一覧</a>
+		<a href="/wiki/history/<%= @name %>">履歴</a>
 	</body>
 </html>
